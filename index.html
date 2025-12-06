@@ -1,276 +1,160 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>ساخت مکالمه صوتی دو نفره (انگلیسی آمریکایی)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root {
-      --bg: #f7f7fb;
-      --card: #fff;
-      --text: #222;
-      --muted: #666;
-      --accent: #2b6cb0;
-      --accent2: #805ad5;
-      --border: #e5e7eb;
-    }
     body {
-      font-family: "Vazirmatn", system-ui, sans-serif;
-      background: linear-gradient(180deg, var(--bg), #eef2ff);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-    }
-    .container {
+      font-family: "Vazirmatn", sans-serif;
+      background: #f9f9fc;
+      color: #222;
       max-width: 900px;
       margin: 40px auto;
       padding: 0 20px;
     }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-      padding: 24px;
-    }
     h1 {
       font-size: 1.8rem;
-      margin: 0 0 6px 0;
-      letter-spacing: -0.02em;
-    }
-    .hint {
-      color: var(--muted);
-      margin-bottom: 18px;
+      margin-bottom: 10px;
     }
     label {
       display: block;
-      font-weight: 700;
-      margin-top: 14px;
+      margin-top: 16px;
+      font-weight: bold;
     }
-    textarea, select, input[type="text"], input[type="number"] {
+    textarea, select, input {
       width: 100%;
-      box-sizing: border-box;
+      padding: 10px;
       margin-top: 6px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      background: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: inherit;
+      box-sizing: border-box;
     }
     textarea {
-      min-height: 220px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Ubuntu Mono", monospace;
-      line-height: 1.6;
+      height: 200px;
       resize: vertical;
-    }
-    textarea:focus, select:focus, input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
-      background: #fff;
-    }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-      align-items: center;
+      font-family: monospace;
     }
     button {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      color: #fff;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: linear-gradient(90deg, #2b6cb0, #805ad5);
+      color: white;
       border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.06s ease, box-shadow 0.2s ease;
-    }
-    button:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
-    button:active { transform: translateY(0); }
-    .status {
-      font-weight: 700;
-      color: var(--accent);
-    }
-    .download {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      color: var(--accent);
-      text-decoration: none;
-      border: 1px dashed var(--accent);
-      padding: 8px 12px;
       border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .sample {
-      margin-top: 8px;
-      font-size: 0.95rem;
-      color: var(--muted);
+    .status {
+      margin-top: 16px;
+      font-weight: bold;
+      color: #2b6cb0;
     }
-    .footer {
-      margin-top: 24px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .badge {
+    .download-link {
       display: inline-block;
+      margin-top: 12px;
+      padding: 8px 12px;
       background: #edf2ff;
-      color: #334155;
-      border: 1px solid #cbd5e1;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.85rem;
-      margin-top: 8px;
+      border: 1px dashed #2b6cb0;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #2b6cb0;
+      font-weight: bold;
     }
-    @media (max-width: 680px) {
-      .row { grid-template-columns: 1fr; }
+    .note {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>ساخت مکالمه صوتی دو نفره (لهجه آمریکایی)</h1>
-      <p class="hint">هر خط را با برچسب A: یا B: آغاز کن. مثال: <code>A: Hello!</code> و <code>B: Hi!</code></p>
-
-      <form id="convForm">
-        <label>دیالوگ انگلیسی</label>
-        <textarea id="script" name="script" dir="ltr" placeholder="A: Hello! How are you today?
+  <h1>ساخت مکالمه صوتی دو نفره (لهجه آمریکایی)</h1>
+  <form id="voiceForm">
+    <label for="script">دیالوگ انگلیسی (مثال: A: Hello! B: Hi!)</label>
+    <textarea id="script" name="script" dir="ltr">A: Hello! How are you today?
 B: I'm doing well, thanks! What about you?
 A: Great! Let's start our lesson.
-B: Perfect, I'm ready!"></textarea>
+B: Perfect, I'm ready!</textarea>
 
-        <div class="row">
-          <div>
-            <label>صدای گوینده A</label>
-            <select id="voice1" name="voice1">
-              <option value="en-US-JennyNeural">Jenny (female)</option>
-              <option value="en-US-AriaNeural">Aria (female)</option>
-              <option value="en-US-SaraNeural">Sara (female)</option>
-              <option value="en-US-GuyNeural">Guy (male)</option>
-              <option value="en-US-DavisNeural">Davis (male)</option>
-              <option value="en-US-ChristopherNeural">Christopher (male)</option>
-            </select>
-          </div>
-          <div>
-            <label>صدای گوینده B</label>
-            <select id="voice2" name="voice2">
-              <option value="en-US-GuyNeural">Guy (male)</option>
-              <option value="en-US-DavisNeural">Davis (male)</option>
-              <option value="en-US-ChristopherNeural">Christopher (male)</option>
-              <option value="en-US-JennyNeural">Jenny (female)</option>
-              <option value="en-US-AriaNeural">Aria (female)</option>
-              <option value="en-US-SaraNeural">Sara (female)</option>
-            </select>
-          </div>
-        </div>
+    <label for="voice1">صدای گوینده A</label>
+    <select id="voice1" name="voice1">
+      <option value="en-US-JennyNeural">Jenny (زن)</option>
+      <option value="en-US-AriaNeural">Aria (زن)</option>
+      <option value="en-US-SaraNeural">Sara (زن)</option>
+      <option value="en-US-GuyNeural">Guy (مرد)</option>
+      <option value="en-US-DavisNeural">Davis (مرد)</option>
+      <option value="en-US-ChristopherNeural">Christopher (مرد)</option>
+    </select>
 
-        <div class="row">
-          <div>
-            <label>سرعت خواندن (۰.۸ تا ۱.۲)</label>
-            <input type="text" id="rate" name="rate" value="1.0" placeholder="مثلاً 0.95">
-          </div>
-          <div>
-            <label>مکث بین جملات (میلی‌ثانیه)</label>
-            <input type="number" id="pause" name="pause" value="350" min="0" step="50">
-          </div>
-        </div>
+    <label for="voice2">صدای گوینده B</label>
+    <select id="voice2" name="voice2">
+      <option value="en-US-GuyNeural">Guy (مرد)</option>
+      <option value="en-US-DavisNeural">Davis (مرد)</option>
+      <option value="en-US-ChristopherNeural">Christopher (مرد)</option>
+      <option value="en-US-JennyNeural">Jenny (زن)</option>
+      <option value="en-US-AriaNeural">Aria (زن)</option>
+      <option value="en-US-SaraNeural">Sara (زن)</option>
+    </select>
 
-        <div class="actions">
-          <button type="submit">تولید فایل MP3</button>
-          <span id="status" class="status"></span>
-          <a id="downloadLink" class="download" href="#" style="display:none">دانلود فایل</a>
-        </div>
-        <div class="badge">خروجی: MP3 با بیت‌ریت ۱۹۲k</div>
-      </form>
+    <label for="rate">سرعت خواندن (مثلاً 0.95)</label>
+    <input type="text" id="rate" name="rate" value="1.0">
 
-      <div class="sample">
-        نمونه دیالوگ:
-        <pre dir="ltr">A: Hello! How are you today?
-B: I'm doing well, thanks! What about you?
-A: Great! Let's start our lesson.
-B: Perfect, I'm ready!</pre>
-      </div>
+    <label for="pause">مکث بین جملات (میلی‌ثانیه)</label>
+    <input type="number" id="pause" name="pause" value="350">
 
-      <div class="footer">
-        نکته: برای طبیعی‌تر شدن گفتار، سرعت را کمی کمتر از ۱ (مثلاً ۰٫۹۵) و مکث‌ها را بین ۳۰۰ تا ۵۰۰ میلی‌ثانیه تنظیم کن.
-      </div>
-    </div>
+    <button type="submit">تولید فایل MP3</button>
+    <div class="status" id="status"></div>
+    <a id="downloadLink" class="download-link" href="#" style="display:none">دانلود فایل صوتی</a>
+  </form>
+
+  <div class="note">
+    نکته: برای طبیعی‌تر شدن گفتار، سرعت را کمی کمتر از ۱ (مثلاً ۰٫۹۵) و مکث‌ها را بین ۳۰۰ تا ۵۰۰ میلی‌ثانیه تنظیم کن.
   </div>
 
   <script>
-    const form = document.getElementById('convForm');
-    const statusEl = document.getElementById('status');
+    const form = document.getElementById('voiceForm');
+    const status = document.getElementById('status');
     const downloadLink = document.getElementById('downloadLink');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      statusEl.textContent = 'در حال ساخت فایل صوتی...';
+      status.textContent = 'در حال تولید فایل صوتی...';
       downloadLink.style.display = 'none';
-      downloadLink.removeAttribute('download');
-      downloadLink.removeAttribute('href');
 
-      const script = document.getElementById('script').value.trim();
-      const voice1 = document.getElementById('voice1').value;
-      const voice2 = document.getElementById('voice2').value;
-      const rate = document.getElementById('rate').value.trim() || '1.0';
-      const pause = document.getElementById('pause').value;
-
-      if (!script) {
-        statusEl.textContent = 'لطفاً دیالوگ را وارد کن.';
-        return;
-      }
-
-      if (isNaN(parseFloat(rate)) || parseFloat(rate) < 0.5 || parseFloat(rate) > 1.5) {
-        statusEl.textContent = 'مقدار سرعت باید بین ۰.۵ تا ۱.۵ باشد.';
-        return;
-      }
+      const formData = new URLSearchParams();
+      formData.append('script', document.getElementById('script').value);
+      formData.append('voice1', document.getElementById('voice1').value);
+      formData.append('voice2', document.getElementById('voice2').value);
+      formData.append('rate', document.getElementById('rate').value);
+      formData.append('pause', document.getElementById('pause').value);
 
       try {
-        const formData = new URLSearchParams();
-        formData.append('script', script);
-        formData.append('voice1', voice1);
-        formData.append('voice2', voice2);
-        formData.append('rate', rate);
-        formData.append('pause', pause);
-
         const res = await fetch('/generate', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: formData.toString()
         });
 
         if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || 'خطا در تولید فایل');
-        }
-
-        // دریافت نام فایل از هدر Content-Disposition (اگر موجود باشد)
-        const cd = res.headers.get('Content-Disposition');
-        let filename = 'conversation.mp3';
-        if (cd && cd.includes('filename=')) {
-          filename = cd.split('filename=')[1].replace(/["']/g, '').trim();
+          const errText = await res.text();
+          throw new Error(errText || 'خطا در تولید فایل');
         }
 
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
+        const filename = res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/["']/g, '') || 'conversation.mp3';
+
         downloadLink.href = url;
         downloadLink.download = filename;
-        downloadLink.style.display = 'inline-flex';
-        downloadLink.textContent = 'دانلود فایل (' + filename + ')';
-        statusEl.textContent = 'فایل آماده شد.';
+        downloadLink.textContent = 'دانلود فایل صوتی';
+        downloadLink.style.display = 'inline-block';
+        status.textContent = '✅ فایل آماده شد.';
       } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'خطا: ' + err.message;
+        status.textContent = '❌ خطا: ' + err.message;
       }
     });
   </script>
 </body>
 </html>
-
