@@ -5,74 +5,21 @@
   <title>ساخت مکالمه صوتی دو نفره (انگلیسی آمریکایی)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: "Vazirmatn", sans-serif;
-      background: #f9f9fc;
-      color: #222;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
-    label {
-      display: block;
-      margin-top: 16px;
-      font-weight: bold;
-    }
-    textarea, select, input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-family: inherit;
-      box-sizing: border-box;
-    }
-    textarea {
-      height: 200px;
-      resize: vertical;
-      font-family: monospace;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: linear-gradient(90deg, #2b6cb0, #805ad5);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .status {
-      margin-top: 16px;
-      font-weight: bold;
-      color: #2b6cb0;
-    }
-    .download-link {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 8px 12px;
-      background: #edf2ff;
-      border: 1px dashed #2b6cb0;
-      border-radius: 6px;
-      text-decoration: none;
-      color: #2b6cb0;
-      font-weight: bold;
-    }
-    .note {
-      margin-top: 20px;
-      font-size: 0.9rem;
-      color: #555;
-    }
+    body { font-family: "Vazirmatn", sans-serif; background: #f9f9fc; color: #222; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    h1 { font-size: 1.8rem; margin-bottom: 10px; }
+    label { display: block; margin-top: 16px; font-weight: bold; }
+    textarea, select, input { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; box-sizing: border-box; }
+    textarea { height: 200px; resize: vertical; font-family: monospace; }
+    button { margin-top: 20px; padding: 10px 20px; background: linear-gradient(90deg, #2b6cb0, #805ad5); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .status { margin-top: 16px; font-weight: bold; color: #2b6cb0; }
+    .download-link { display: inline-block; margin-top: 12px; padding: 8px 12px; background: #edf2ff; border: 1px dashed #2b6cb0; border-radius: 6px; text-decoration: none; color: #2b6cb0; font-weight: bold; }
+    .note { margin-top: 20px; font-size: 0.9rem; color: #555; }
   </style>
 </head>
 <body>
   <h1>ساخت مکالمه صوتی دو نفره (لهجه آمریکایی)</h1>
-  <form id="voiceForm">
-    <label for="script">دیالوگ انگلیسی (مثال: A: Hello! B: Hi!)</label>
+  <form id="voiceForm" method="POST" action="/generate">
+    <label for="script">دیالوگ انگلیسی</label>
     <textarea id="script" name="script" dir="ltr">A: Hello! How are you today?
 B: I'm doing well, thanks! What about you?
 A: Great! Let's start our lesson.
@@ -98,63 +45,17 @@ B: Perfect, I'm ready!</textarea>
       <option value="en-US-SaraNeural">Sara (زن)</option>
     </select>
 
-    <label for="rate">سرعت خواندن (مثلاً 0.95)</label>
+    <label for="rate">سرعت خواندن</label>
     <input type="text" id="rate" name="rate" value="1.0">
 
-    <label for="pause">مکث بین جملات (میلی‌ثانیه)</label>
+    <label for="pause">مکث بین جملات (ms)</label>
     <input type="number" id="pause" name="pause" value="350">
 
     <button type="submit">تولید فایل MP3</button>
-    <div class="status" id="status"></div>
-    <a id="downloadLink" class="download-link" href="#" style="display:none">دانلود فایل صوتی</a>
   </form>
 
   <div class="note">
     نکته: برای طبیعی‌تر شدن گفتار، سرعت را کمی کمتر از ۱ (مثلاً ۰٫۹۵) و مکث‌ها را بین ۳۰۰ تا ۵۰۰ میلی‌ثانیه تنظیم کن.
   </div>
-
-  <script>
-    const form = document.getElementById('voiceForm');
-    const status = document.getElementById('status');
-    const downloadLink = document.getElementById('downloadLink');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      status.textContent = 'در حال تولید فایل صوتی...';
-      downloadLink.style.display = 'none';
-
-      const formData = new URLSearchParams();
-      formData.append('script', document.getElementById('script').value);
-      formData.append('voice1', document.getElementById('voice1').value);
-      formData.append('voice2', document.getElementById('voice2').value);
-      formData.append('rate', document.getElementById('rate').value);
-      formData.append('pause', document.getElementById('pause').value);
-
-      try {
-        const res = await fetch('/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: formData.toString()
-        });
-
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(errText || 'خطا در تولید فایل');
-        }
-
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const filename = res.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/["']/g, '') || 'conversation.mp3';
-
-        downloadLink.href = url;
-        downloadLink.download = filename;
-        downloadLink.textContent = 'دانلود فایل صوتی';
-        downloadLink.style.display = 'inline-block';
-        status.textContent = '✅ فایل آماده شد.';
-      } catch (err) {
-        status.textContent = '❌ خطا: ' + err.message;
-      }
-    });
-  </script>
 </body>
 </html>
